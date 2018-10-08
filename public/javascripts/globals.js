@@ -34,7 +34,7 @@ var background02 = {
 }
 
 var backgrounds = [background01, background02];
-
+var isScrollBackground = false;
 // animations
 var gokuData = {
     x: WIDTH / 2 - 200,
@@ -98,9 +98,30 @@ var runnerData = {
     height: 256,
     image: runnerImage,
     animationSpeed: 100,
-    active: 'run-01',
+    active: 'run-02',
     changeAnimation: function() {
-        this.active = this.animations[this.active].next
+        if(this.isRunning) {
+            this.active = this.animations[this.active].next
+        } else {
+            this.active = 'run-02';
+        }
+    },
+    addControls: function() {
+        document.addEventListener('keydown', (e) => {
+            e.preventDefault();
+            if(e.which == 68) {
+                this.isRunning = true;
+                isScrollBackground = true;
+            }
+        })
+
+        document.addEventListener('keyup', (e) => {
+            e.preventDefault();
+            if(e.which == 68){
+                this.isRunning = false;
+                isScrollBackground = false;
+            }
+        })
     }
 };
 

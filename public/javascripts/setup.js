@@ -23,10 +23,12 @@ function reset() {
 function scrollBackground(){
     for (let i = 0; i < backgrounds.length; i++) {
         var bgi = backgrounds[i];
-        if(bgi.x < -WIDTH) {
-            bgi.x = WIDTH;
+        if(isScrollBackground){
+            if(bgi.x < -WIDTH) {
+                bgi.x = WIDTH;
+            }
+            bgi.x -= 2;
         }
-        bgi.x -= 2;
         ctx.drawImage(bgi.image, bgi.x, bgi.y);
     }
 }
