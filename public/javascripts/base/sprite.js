@@ -7,6 +7,8 @@ class Sprite {
         this.image = options.image;
         this.active = 'idle';
         this.poweringup = false;
+        this.highkick = false;
+        this.reverseAnim = false;
         this.animations = {
             'idle': {x: 0, y:0, width: this.width, height: this.height, pos: {x: this.x, y: this.y}, next: 'squat'},
             'squat': {x: 240, y: 370, width: this.width + 10, height: this.height, pos: {x: this.x, y: this.y}, next: 'pre-powerup', prev: 'idle'},
@@ -27,17 +29,20 @@ class Sprite {
             if(this.active != 'pre-powerup') {
                 this.active = this.animations[this.active].next;
             }
-        } else if (this.highkick) {
+        } else if (this.highkick && !this.reverseAnim) {
             if(this.active == 'idle') {
                 this.active = 'start-kick';
             } else if (this.active == 'start-kick') {
                 this.active = 'kick'
             } else {
-                this.highkick = false;
+                this.reverseAnim = true;
             }
         } else {
             if(this.active != 'idle') {
                 this.active = this.animations[this.active].prev;
+            } else {
+                this.reverseAnim = false;
+                this.highkick = false;
             }
         }
     }
