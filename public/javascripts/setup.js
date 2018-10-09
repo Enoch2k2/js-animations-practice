@@ -1,8 +1,8 @@
-var goku;
-var runner;
+var currentScene;
+
 function setup() {
     reset();
-    runner = new Sprite(runnerData);
+    loadScene();    
     draw();
 }
 
@@ -10,8 +10,7 @@ function setup() {
 function draw() {
     animate(draw);
     reset();
-    scrollBackground();
-    runner.render();
+    currentScene.render();
 }
 
 function reset() {
@@ -20,17 +19,22 @@ function reset() {
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 }
 
-function scrollBackground(){
-    for (let i = 0; i < backgrounds.length; i++) {
-        var bgi = backgrounds[i];
-        if(isScrollBackground){
-            if(bgi.x < -WIDTH) {
-                bgi.x = WIDTH;
-            }
-            bgi.x -= 2;
-        }
-        ctx.drawImage(bgi.image, bgi.x, bgi.y);
+function loadScene(){
+    switch(loadSceneByTitle) {
+        case 'DBZ':
+            let goku = new Sprite(gokuData);
+            currentScene = new Scene({ character: goku, background: darkBackground });
+            break;
+        case 'Runner':
+            let runner = new Sprite(runnerData); 
+            currentScene = new Scene({ character: runner, background: cityBackground });
+            break;
+        case 'Title':
+            currentScene = new TitleScreen(titleScreenData)
+            break;
     }
 }
+
+
 
 window.addEventListener('load', setup);

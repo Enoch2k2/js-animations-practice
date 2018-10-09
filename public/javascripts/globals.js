@@ -6,10 +6,20 @@ const animate = window.requestAnimationFrame;
 const HEIGHT = 600;
 const WIDTH = 800;
 
+const UP_ARROW = 40;
+const DOWN_ARROW = 38;
+const LEFT_ARROW = 37;
+const RIGHT_ARROW = 39;
 const SPACEBAR = 32;
+const ESC_KEY = 27;
 const KEYS = {
-    'a': 65
+    'a': 65,
+    'w': 87,
+    's': 83,
+    'd': 68
 }
+
+var loadSceneByTitle = "Title";
 
 // images
 var gokuImage = new Image();
@@ -21,20 +31,98 @@ runnerImage.src = '../images/spritestrip.png';
 var townBackground = new Image();
 townBackground.src = '../images/town.jpg';
 
-var background01 = {
-    x: 0,
-    y: 50,
-    image: townBackground
+var cityBackground = {
+    isScrollBackground: false,
+    backgrounds: [
+        {x: 0, y: 50, image: townBackground},
+        {x: WIDTH, y: 50, image: townBackground}
+    ],
+    render: function(){
+        for (let i = 0; i < this.backgrounds.length; i++) {
+            var bgi = this.backgrounds[i];
+            if(this.isScrollBackground){
+                if(bgi.x < -WIDTH) {
+                    bgi.x = WIDTH;
+                }
+                bgi.x -= 2;
+            }
+            ctx.drawImage(bgi.image, bgi.x, bgi.y);
+        }
+    }
 }
 
-var background02 = {
-    x: WIDTH,
-    y: 50,
-    image: townBackground
+var darkBackground = {
+    render: function(){
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    }
 }
 
-var backgrounds = [background01, background02];
-var isScrollBackground = false;
+var titleScreenData = {
+    title: {
+        x: WIDTH / 2 - 100,
+        y: HEIGHT / 2 - 150,
+        text: 'Choose A Scene',
+        color: 'white',
+        font: '30px Arial',
+        width: 300
+    },
+    selections: [
+        {  
+            x: WIDTH / 2 - 50,
+            y: HEIGHT / 2 - 50,
+            text: 'Goku Scene',
+            color: 'white',
+            font: '20px Arial',
+            width: 300,
+            active: true,
+            title: 'DBZ'
+        },
+        {
+            x: WIDTH / 2 - 50,
+            y: HEIGHT / 2 - 20,
+            text: 'Runner Scene',
+            color: 'white',
+            font: '20px Arial',
+            width: 300,
+            active: false,
+            title: "Runner"
+        }
+    ],
+    addControls: function() {
+        document.addEventListener('keydown', this.makeSelection);
+    },
+    makeSelection: function(e) {
+        e.preventDefault();
+        let selection = this.selections.find((s) => s.active);
+        let currentIndex = this.selections.indexOf(selection);
+        if(e.which == UP_ARROW) {
+            if(this.selections[currentIndex + 1]) {
+                this.selections[currentIndex + 1].active = true;
+                selection.active = false;
+            } else {
+                this.selections[0].active = true;
+                selection.active = false;
+            }
+        } else if (e.which == DOWN_ARROW) {
+            if(this.selections[currentIndex - 1]) {
+                this.selections[currentIndex - 1].active = true;
+                selection.active = false;
+            } else {
+                this.selections[this.selections.length - 1].active = true;
+                selection.active = false;
+            }
+        } else if (e.which == SPACEBAR) {
+            loadSceneByTitle = selection.title;
+            this.removeControls();
+            loadScene();
+        }
+    },
+    removeControls: function() {
+        document.removeEventListener('keydown', this.makeSelection);
+    }
+}
+
 // animations
 var gokuData = {
     x: WIDTH / 2 - 200,
@@ -109,17 +197,17 @@ var runnerData = {
     addControls: function() {
         document.addEventListener('keydown', (e) => {
             e.preventDefault();
-            if(e.which == 68) {
+            if(e.which == KEYS['d'] || e.which == RIGHT_ARROW) {
                 this.isRunning = true;
-                isScrollBackground = true;
+                this.background.isScrollBackground = true;
             }
         })
 
         document.addEventListener('keyup', (e) => {
             e.preventDefault();
-            if(e.which == 68){
+            if(e.which == KEYS['d'] || e.which == RIGHT_ARROW){
                 this.isRunning = false;
-                isScrollBackground = false;
+                this.background.isScrollBackground = false;
             }
         })
     }
